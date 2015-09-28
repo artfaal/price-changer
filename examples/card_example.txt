@@ -1,0 +1,57 @@
+{
+    "_id" : "Супер товар",
+    "body" : "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "slug" : "super_tovar",
+    "main_category_slug" : "categorya1",
+    "producer" : "Super",
+    "main_category" : "cat0",
+    "doc" : [
+        {
+            "doc_description" : "Instruction",
+            "_id" : "123.pdf"
+        }
+    ],
+    "child_category_slug" : "cat2",
+    "create_at" : ISODate("2014-11-28T16:57:24.190Z"),
+    "properties" : [
+        {
+            "article" : "945708",
+            "feature" : "3,0 кВт",
+            "price" : 1135
+        },
+        {
+            "article" : "945709",
+            "feature" : "4,5 кВт",
+            "price" : 1222
+        },
+        {
+            "article" : "945710",
+            "price" : 1310,
+            "feature" : "6,0 кВт"
+        }
+    ],
+    "main_description" : "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse",
+    "description_meta" : "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo",
+    "images" : [
+        {
+            "position" : 1,
+            "alt" : "ALT",
+            "_id" : "945708.jpg"
+        }
+    ],
+    "position" : 135,
+    "child_category" : "Lorem",
+    "active" : true,
+    "keywords_meta" : "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim ven"
+}

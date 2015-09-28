@@ -5,10 +5,10 @@ import csv
 import re
 
 # Имя базы данных
-DB_NAME = 'price-changer-test-2'
+DB_NAME = 'name_of_the_base'
 
 # Предобработка csv файлов
-FILENAME = 'price/'+'01_eos_1-4.csv'
+FILENAME = 'examples/'+'test.csv'
 # Указываем здесь какими по счету в csv файле идут
 # артикул и цена (нумерация начиная с нуля, естественно)
 ARTICLE = 1
@@ -98,7 +98,7 @@ for k in maindict:
             print u'Добавление цены товару: '+i['_id']
             db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
             ADD += 1
-
-print u'Изменено цен: ' + CHANGE
-print u'Цен без изменений: ' + NO_CHANGE
-print u'Ранее не было цены: ' + ADD
+print '=================================='
+print u'Изменено цен: ' + str(CHANGE)
+print u'Цен без изменений: ' + str(NO_CHANGE)
+print u'Ранее не было цены: ' + str(ADD)
