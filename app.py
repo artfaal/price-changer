@@ -39,7 +39,7 @@ maindict = makedic(FILENAME, ARTICLE, PRICE)
 
 # Здесь начинаем брать кажду строку из csv и искать артикуль в базе
 for k in maindict:
-    checkart = card.find({'properties': {'$elemMatch': {'article': str(k)}}}, {'_id': 1, 'properties': 1})
+    checkart = db.card.find({'properties': {'$elemMatch': {'article': str(k)}}}, {'_id': 1, 'properties.$.price': 1})
     # Костылек, потому что если не указать фор, будет просто cursor
     for i in checkart:
         # Условие для того, что бы не вызывало ошибку. когда нет цены.
@@ -50,6 +50,12 @@ for k in maindict:
             # Если цены не совпадают
             if str(price_in_base) != str(maindict[k]):
                 print 'Нужная цена: '+maindict[k]+' '+'Цена в базе: '+str(price_in_base)
+                # print i
+                # print id_of_card
+                # print str(k)
+                # print maindict[k]
+
+                db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': str(maindict[k])}})
             # Если цены совпадают
             elif str(price_in_base) == str(maindict[k]):
                 print 'Цена та же!'
@@ -62,3 +68,10 @@ for k in maindict:
 
 # Что бы апдейтнуть
 # db.card.update({'_id': 'Thermat', 'properties.article':'944822'},{'$set': {'properties.$.price': 888888888888}})
+
+# Для теста в промте монго
+# db.card.update({_id: 'Thermat', 'properties.article':'944821'},{'$set': {'properties.$.price': 123123123)}})
+# Вот идеально работает
+# db.card.update({'_id': 'Thermat', 'properties.article':'944820'},{'$set': {'properties.$.price': 'sdfsdfsdfsdf'}})
+
+# ffff = db.card.find({'properties': {'$elemMatch': {'article': '944820'}}}, {'_id': 1, 'properties.$.price': 1})
