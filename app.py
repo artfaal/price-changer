@@ -5,10 +5,12 @@ import csv
 import re
 
 # Имя базы данных
-DB_NAME = 'change-price-sauna-test'
+DB_NAME = 'testsauna' #change-price-sauna-test
 
 # Предобработка csv файлов
 FILENAME = 'price/'+'01_eos_1-4.csv'
+# Указываем здесь какими по счету в csv файле идут
+# артикул и цена (нумерация начиная с нуля, естественно)
 ARTICLE = 1
 PRICE = 4
 

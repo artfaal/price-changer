@@ -137,3 +137,5 @@ target/
 
 # sftp configuration file
 sftp-config.json
+
+price
