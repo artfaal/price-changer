@@ -49,22 +49,25 @@ for k in maindict:
             id_of_card = i['_id']
             # Если цены не совпадают
             if str(price_in_base) != str(maindict[k]):
-                print 'Нужная цена: '+maindict[k]+' '+'Цена в базе: '+str(price_in_base)
+                print 'Нужная цена: '+maindict[k]+' '+'Цена в базе: '+str(price_in_base)+u'Изменяем.'
                 # print i
                 # print id_of_card
                 # print str(k)
                 # print maindict[k]
 
-                db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': str(maindict[k])}})
+                db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
             # Если цены совпадают
             elif str(price_in_base) == str(maindict[k]):
-                print 'Цена та же!'
+                print u'Цена та же: '+i['_id']
+                db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
             # Если ошибка
             else:
                 print 'чет не то'
         # Случай, когда у товара нет ещё цены в базе
         else:
-            print u'............У товара: '+i['_id']+u' нет цены'
+            id_of_card = i['_id']
+            db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
+            print u'Добавление цены товару: '+i['_id']
 
 # Что бы апдейтнуть
 # db.card.update({'_id': 'Thermat', 'properties.article':'944822'},{'$set': {'properties.$.price': 888888888888}})
