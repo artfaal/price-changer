@@ -5,7 +5,7 @@ import csv
 import re
 
 # Имя базы данных
-DB_NAME = 'testsauna' #change-price-sauna-test
+DB_NAME = 'price-changer-test-2'
 
 # Предобработка csv файлов
 FILENAME = 'price/'+'01_eos_1-4.csv'
@@ -13,6 +13,11 @@ FILENAME = 'price/'+'01_eos_1-4.csv'
 # артикул и цена (нумерация начиная с нуля, естественно)
 ARTICLE = 1
 PRICE = 4
+
+# Счетчик для финального вывова результатов в консоль
+CHANGE = 0
+NO_CHANGE = 0
+ADD = 0
 
 # Подключение к базе. Не забыть прокинуть SSH туннель,
 # если MongoDB не на локальной машине.
@@ -41,7 +46,6 @@ maindict = makedic(FILENAME, ARTICLE, PRICE)
 #     v = maindict[k]
 #     print k, v
 
-
 # Здесь начинаем брать кажду строку из csv и искать артикуль в базе.
 for k in maindict:
     # Длинный RAW запрос. Ищет соответствие поля и
@@ -64,6 +68,7 @@ for k in maindict:
             # Если цены не совпадают, то меняем запись в базе.
             if str(price_in_base) != str(maindict[k]):
                 print id_of_card+u' Нужная цена: '+maindict[k]+' '+u'Цена в базе: '+str(price_in_base)+u' Изменяем.'
+                CHANGE += 1
                 db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
 
                 # Отладка
@@ -75,6 +80,7 @@ for k in maindict:
             # Если цены совпадают выводим в консоль сообщение
             elif str(price_in_base) == str(maindict[k]):
                 print u'Цена та же: '+i['_id']
+                NO_CHANGE += 1
                 # Этот запрос раскомичивать не надо, потому что по
                 # факту цены одинаковые. Раскоммитить только если по каким-то
                 # причинам надо перезаписать.В моем случае,
@@ -91,3 +97,8 @@ for k in maindict:
         else:
             print u'Добавление цены товару: '+i['_id']
             db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
+            ADD += 1
+
+print u'Изменено цен: ' + CHANGE
+print u'Цен без изменений: ' + NO_CHANGE
+print u'Ранее не было цены: ' + ADD
