@@ -4,77 +4,88 @@ import pymongo
 import csv
 import re
 
-client = pymongo.MongoClient('localhost', 27017)
-db = client['testsauna']
-
-card = db.card
-
+# Имя базы данных
+DB_NAME = 'change-price-sauna-test'
 
 # Предобработка csv файлов
-FILENAME = '02_lux_0-5.csv'
-ARTICLE = 0
-PRICE = 5
+FILENAME = 'price/'+'01_eos_1-4.csv'
+ARTICLE = 1
+PRICE = 4
+
+# Подключение к базе. Не забыть прокинуть SSH туннель,
+# если MongoDB не на локальной машине.
+client = pymongo.MongoClient('localhost', 27017)
+db = client[DB_NAME]
 
 
+# Функция, которая очищает поле цены от символов.
 def onlynum(val):
-    # Убирает из строчки все посторонние штуки, и оставляет
-    # только цифры, соединяя их.
     result = re.findall('(\d+)', val)
     result = ''.join(result)
     return result
 
 
+# Создаем словарь из двух полей, артикула и цены.
 def makedic(FILENAME, ARTICLE, PRICE):
-    # Создает словарь из двух полей, артикула и цены.
-    with open('price/'+FILENAME, 'rb') as f:
+    with open(FILENAME, 'rb') as f:
         reader = csv.reader(f, dialect='excel', delimiter=';')
         mydict = {rows[ARTICLE]: onlynum(rows[PRICE]) for rows in reader}
         return mydict
 
-# Отладочная часть
 maindict = makedic(FILENAME, ARTICLE, PRICE)
+
+# Отладка.
 # for k in maindict:
 #     v = maindict[k]
 #     print k, v
 
-# Здесь начинаем брать кажду строку из csv и искать артикуль в базе
+
+# Здесь начинаем брать кажду строку из csv и искать артикуль в базе.
 for k in maindict:
+    # Длинный RAW запрос. Ищет соответствие поля и
+    # в вывод идет только id и этот артикул
     checkart = db.card.find({'properties': {'$elemMatch': {'article': str(k)}}}, {'_id': 1, 'properties.$.price': 1})
-    # Костылек, потому что если не указать фор, будет просто cursor
+
+    # Костылек, потому что если не указать for,
+    # будет просто cursor. Проникаем внутрь запроса.
     for i in checkart:
+        # Определяем название товара.
+        id_of_card = i['_id']
+
         # Условие для того, что бы не вызывало ошибку. когда нет цены.
+        # Первый в списке, '0', указываем потому что
+        # там будет только один элемент. И так сойдет :)
         if 'price' in i['properties'][0]:
-            # Определяет значение цены, которое в базе
+            # Определяет значение цены, которое в базе MongoDB на данный момент.
             price_in_base = i['properties'][0]['price']
-            id_of_card = i['_id']
-            # Если цены не совпадают
+
+            # Если цены не совпадают, то меняем запись в базе.
             if str(price_in_base) != str(maindict[k]):
-                print 'Нужная цена: '+maindict[k]+' '+'Цена в базе: '+str(price_in_base)+u'Изменяем.'
+                print id_of_card+u' Нужная цена: '+maindict[k]+' '+u'Цена в базе: '+str(price_in_base)+u' Изменяем.'
+                db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
+
+                # Отладка
                 # print i
                 # print id_of_card
                 # print str(k)
                 # print maindict[k]
 
-                # db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
-            # Если цены совпадают
+            # Если цены совпадают выводим в консоль сообщение
             elif str(price_in_base) == str(maindict[k]):
                 print u'Цена та же: '+i['_id']
+                # Этот запрос раскомичивать не надо, потому что по
+                # факту цены одинаковые. Раскоммитить только если по каким-то
+                # причинам надо перезаписать.В моем случае,
+                # я случайно перезаписал все в str, а лучше оставить всё в int
+
                 # db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
+
             # Если ошибка
             else:
-                print 'чет не то'
-        # Случай, когда у товара нет ещё цены в базе
+                print 'Error! Something go wrong.'
+
+        # Случай, когда у товара нет ещё цены в базе.
+        # Просто добавляем тем же способом.
         else:
-            id_of_card = i['_id']
-            # db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
             print u'Добавление цены товару: '+i['_id']
-
-# Что бы апдейтнуть
-# db.card.update({'_id': 'Thermat', 'properties.article':'944822'},{'$set': {'properties.$.price': 888888888888}})
-
-# Для теста в промте монго
-# db.card.update({_id: 'Thermat', 'properties.article':'944821'},{'$set': {'properties.$.price': 123123123)}})
-# Вот идеально работает
-# db.card.update({'_id': 'Thermat', 'properties.article':'944820'},{'$set': {'properties.$.price': 'sdfsdfsdfsdf'}})
-
-# ffff = db.card.find({'properties': {'$elemMatch': {'article': '944820'}}}, {'_id': 1, 'properties.$.price': 1})
+            db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
