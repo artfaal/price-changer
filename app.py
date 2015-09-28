@@ -11,9 +11,9 @@ card = db.card
 
 
 # Предобработка csv файлов
-FILENAME = 'test.csv'
-ARTICLE = 1
-PRICE = 4
+FILENAME = '02_lux_0-5.csv'
+ARTICLE = 0
+PRICE = 5
 
 
 def onlynum(val):
@@ -26,7 +26,7 @@ def onlynum(val):
 
 def makedic(FILENAME, ARTICLE, PRICE):
     # Создает словарь из двух полей, артикула и цены.
-    with open(FILENAME, 'rb') as f:
+    with open('price/'+FILENAME, 'rb') as f:
         reader = csv.reader(f, dialect='excel', delimiter=';')
         mydict = {rows[ARTICLE]: onlynum(rows[PRICE]) for rows in reader}
         return mydict
@@ -55,18 +55,18 @@ for k in maindict:
                 # print str(k)
                 # print maindict[k]
 
-                db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
+                # db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
             # Если цены совпадают
             elif str(price_in_base) == str(maindict[k]):
                 print u'Цена та же: '+i['_id']
-                db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
+                # db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
             # Если ошибка
             else:
                 print 'чет не то'
         # Случай, когда у товара нет ещё цены в базе
         else:
             id_of_card = i['_id']
-            db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
+            # db.card.update({'_id': id_of_card, 'properties.article':str(k)},{'$set': {'properties.$.price': int(maindict[k])}})
             print u'Добавление цены товару: '+i['_id']
 
 # Что бы апдейтнуть
